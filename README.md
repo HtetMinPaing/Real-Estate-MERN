@@ -35,3 +35,6 @@ mv .git ../
 ### mongo db
 npm i mongoose
 npm i dotenv
+
+### For encryption of password
+npm i bcryptjs
