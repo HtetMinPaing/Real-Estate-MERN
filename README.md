@@ -31,3 +31,7 @@ node api/index.js
 
 ### Moving the git repo
 mv .git ../
+
+### mongo db
+npm i mongoose
+npm i dotenv
