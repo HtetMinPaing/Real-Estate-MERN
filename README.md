@@ -38,3 +38,6 @@ npm i dotenv
 
 ### For encryption of password
 npm i bcryptjs
+
+### Cookies
+npm i jsonwebtoken
