@@ -8,7 +8,7 @@ export const test = (req, res) => {
     })
 }
 
-export const updateUser = async (req, res) => {
+export const updateUser = async (req, res, next) => {
     if (req.user.id !== req.params.id) return next(errorHandler(401, "You can only edit your own account"));
 
     try {
@@ -17,7 +17,7 @@ export const updateUser = async (req, res) => {
         }
 
         const updateUser = await User.findByIdAndUpdate(req.params.id, {
-            Sset: {
+            $set: {
                 username: req.body.username,
                 email: req.body.email,
                 password: req.body.password,
