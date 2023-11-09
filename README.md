@@ -48,3 +48,6 @@ npm i jsonwebtoken
 
  ### Firebase
  npm install firebase
+
+ ### 
+ npm i cookie-parser
