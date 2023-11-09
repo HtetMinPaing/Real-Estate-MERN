@@ -7,7 +7,7 @@ import {
   uploadBytesResumable,
 } from 'firebase/storage';
 import { app } from '../../firebase';
-import { updateUserStart, updateUserSuccess, updateUserFailure } from '../redux/user/userSlice';
+import { updateUserStart, updateUserSuccess, updateUserFailure, signOutUserStart, signOutUserFailure, signOutUserSuccess } from '../redux/user/userSlice';
 import { useDispatch } from 'react-redux';
 
 // firebase setting rule
@@ -84,6 +84,22 @@ const Profile = () => {
       dispatch(updateUserFailure(err.message))
     }
   }
+
+  const handleSignOut = async () => {
+
+    try {
+      dispatch(signOutUserStart())
+      const res = await fetch('/api/auth/signout');
+      const data = await res.json();
+      if(data.success === false) {
+        dispatch(signOutUserFailure(data.message));
+        return;
+      }
+      dispatch(signOutUserSuccess(data));
+    } catch(error) {
+      dispatch(signOutUserFailure(data.message))
+    }
+  }
   return (
     <div className="p-3 max-w-lg mx-auto">
 
@@ -158,7 +174,7 @@ const Profile = () => {
         <span className="text-red-700 cursor-pointer">
           Delete
         </span>
-        <span className="text-red-700 cursor-pointer">
+        <span onClick={handleSignOut} className="text-red-700 cursor-pointer">
           Sign Out
         </span>
       </div>
