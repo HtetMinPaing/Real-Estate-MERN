@@ -25,8 +25,10 @@ const Profile = () => {
   const [file, setFile] = useState(undefined)
   const [uploadPercent, setUploadPercent] = useState(0)
   const [uploadError, setUploadError] = useState(false)
+  const [listingsError, setListingsError] = useState(false)
   const [formData, setFormData] = useState({})
   const [updateSuccess, setUpdateSuccess] = useState(false)
+  const [userListings, setUserListings] = useState([]);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -92,15 +94,33 @@ const Profile = () => {
       dispatch(signOutUserStart())
       const res = await fetch('/api/auth/signout');
       const data = await res.json();
-      if(data.success === false) {
+      if (data.success === false) {
         dispatch(signOutUserFailure(data.message));
         return;
       }
       dispatch(signOutUserSuccess(data));
-    } catch(error) {
+    } catch (error) {
       dispatch(signOutUserFailure(data.message))
     }
   }
+
+  const showListings = async () => {
+    try {
+      setListingsError(false)
+      const res = await fetch(`/api/user/listings/${currentUser._id}`);
+      const data = await res.json();
+
+      if (data.success === false) {
+        setListingsError(true);
+        return
+      }
+
+      setUserListings(data)
+    } catch (err) {
+      setListingsError(true)
+    }
+  }
+
   return (
     <div className="p-3 max-w-lg mx-auto">
 
@@ -168,7 +188,7 @@ const Profile = () => {
           onChange={handleChange}
         />
         <button disabled={loading} className="bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80">
-          {loading? "Loading...": "Update"}
+          {loading ? "Loading..." : "Update"}
         </button>
         <Link className="bg-green-700 text-white p-3 rounded-lg uppercase text-center hover:opacity-95" to="/create-listing">
           Create Listing
@@ -182,9 +202,44 @@ const Profile = () => {
           Sign Out
         </span>
       </div>
-      <p className="text-red-700 mt-5">{error ? error: ""}</p>
-      <p className="text-green-700 mt-5">{updateSuccess ? "User is sucessfully updated": ""}</p>
+      <p className="text-red-700 mt-5">{error ? error : ""}</p>
+      <p className="text-green-700 mt-5">{updateSuccess ? "User is sucessfully updated" : ""}</p>
 
+      <button onClick={showListings} className="text-green-700 w-full">Show Listings</button>
+      <p className="text-red-700 mt-5">{listingsError ? "Error showing Listings" : ""}</p>
+
+      {userListings && userListings.length > 0 &&
+        <div className="flex flex-col gap-4">
+          <h1 className='font-semibold text-2xl text-center'>Your Listings</h1>
+          {userListings.map((listing) => (
+            <div key={listing._id} className='border rounded-lg p-3 flex justify-between items-center gap-4'>
+              <Link to={`/listing/${listing._id}`}>
+                <img
+                  src={listing.imageUrls[0]}
+                  alt=""
+                  className='h-16 w-16 object-contain'
+                />
+              </Link>
+              <Link
+                to={`/listing/${listing._id}`}
+                className='text-slate-700 font-semibold flex-1 hover:underline truncate'
+              >
+                <p>
+                  {listing.name}
+                </p>
+              </Link>
+              <div className='flex flex-col items-center'>
+                <button className="text-red-700 uppercase">
+                  Delete
+                </button>
+                <button className="text-green-700 uppercase">
+                  Edit
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      }
     </div>
   )
 }
