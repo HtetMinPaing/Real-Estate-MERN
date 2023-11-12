@@ -1,4 +1,5 @@
 import User from "../models/user.model.js"
+import Listing from "../models/listing.model.js"
 import { errorHandler } from "../utils/error.js"
 import bcryptjs from 'bcryptjs'
 
@@ -32,5 +33,20 @@ export const updateUser = async (req, res, next) => {
         next(err)
     }
 
+
+}
+
+export const getUserListings = async (req, res, next) =>{
+
+    if (req.user.id === req.params.id) {
+        try {
+            const listings = await Listing.find({ useRef: req.params.id})
+            res.status(200).json(listings)
+        } catch (err) {
+            next(err)
+        }
+    } else {
+        return next(errorHandler(401, "You can only edit your own account"));
+    }
 
 }
